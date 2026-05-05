@@ -1,10 +1,10 @@
-import User from './models/User.js';
+import User from './User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 export const register = async (req, res) => {
     try {
-        const { name, email, password } = req.query;
+        const { name, email, password } = req.body;
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ msg: 'User already exists' });
 
@@ -18,7 +18,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.query;
+        const { email, password } = req.body;
         const user = await User.findOne({ email });
         if (!user) return res.status(400).json({ msg: 'Invalid Credentials' });
 
@@ -30,8 +30,9 @@ export const login = async (req, res) => {
 
         res.cookie('token', token, { 
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'none'
+            secure: true, // Required for sameSite: 'none' in cross-origin environments
+            sameSite: 'none',
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
         });
         
         res.json({ msg: 'Logged in successfully', user: { name: user.name, email: user.email } });
@@ -53,7 +54,7 @@ export const logout = (req, res) => {
     res.cookie('token', '', {
         expires: new Date(0),
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         sameSite: 'none'
     });
     res.json({ msg: 'Logged out successfully' });

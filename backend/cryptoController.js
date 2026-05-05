@@ -1,4 +1,4 @@
-import Crypto from './models/Crypto.js';
+import Crypto from './Crypto.js';
 
 export const getAllCoins = async (req, res) => {
     try {

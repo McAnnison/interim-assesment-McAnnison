@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Crypto from './models/Crypto.js';
+import Crypto from './Crypto.js';
 import dotenv from 'dotenv';
 
 dotenv.config();

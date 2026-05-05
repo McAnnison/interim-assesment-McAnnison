@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 
 export const register = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password } = req.query;
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ msg: 'User already exists' });
 
@@ -18,7 +18,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password } = req.query;
         const user = await User.findOne({ email });
         if (!user) return res.status(400).json({ msg: 'Invalid Credentials' });
 
@@ -50,6 +50,11 @@ export const getProfile = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-    res.cookie('token', '', { expires: new Date(0) });
+    res.cookie('token', '', {
+        expires: new Date(0),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none'
+    });
     res.json({ msg: 'Logged out successfully' });
 };
